@@ -3,16 +3,13 @@
 Turn any song into karaoke. Paste a YouTube link, wait a few minutes, sing.
 Kairaok isolates the singer from the band, finds the beat and the melody,
 gets time-synced lyrics, and shows the melody as note bars with your own voice
-drawn on top, the way the old PlayStation karaoke games did. At the end you
-get a score.
+drawn on top. At the end you get a score.
 
 **For personal use.** This repository contains only code. It ships no songs, stems
 or lyrics. Songs and lyrics are copyrighted: use it with music you are allowed to
 copy for yourself, keep what it produces on your own computer, and do not host it
 as a public website. Downloading from YouTube may break YouTube's terms of service;
 whether you use that part is your decision.
-
-## Screenshots
 
 The songbook: paste a YouTube link, or add a song with your own lyrics or an audio file.
 
@@ -109,11 +106,12 @@ Everything is stored in `library/<song id>/`: the two stems as FLAC, plus
 
 1. **LRCLIB** is searched with artist, title and song length. If a time-synced
    version fits the length of your audio (within 3 seconds), it is used, and
-   WhisperX refines it from line timing to word timing.
-2. If LRCLIB only has plain text, or its synced version belongs to a different
+   WhisperX refines it from line timing to word timing. Lyrics come from [LRCLIB](https://lrclib.net),
+   a free, open database of synced lyrics. **Please consider donating to LRCLIB to keep it running.**
+3. If LRCLIB only has plain text, or its synced version belongs to a different
    cut of the song (a music video with an intro, for example), **WhisperX**
    listens to the isolated vocals and the known text is placed onto what it hears.
-3. If there are no lyrics anywhere, WhisperX writes down what is sung. Expect mistakes.
+4. If there are no lyrics anywhere, WhisperX writes down what is sung. Expect mistakes.
 
 You can always paste your own lyrics (plain text or `.lrc`), when adding a song
 or later under "Timing and lyrics" on the sing screen. The same place lets you
