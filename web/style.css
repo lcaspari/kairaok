@@ -1,0 +1,302 @@
+/* Kairaok: a karaoke bar after dark. Violet room, pink neon, gold spotlight. */
+
+:root {
+  --room: #170b2e;        /* the dark bar */
+  --velvet: #24123f;      /* panels, the booth seats */
+  --velvet-2: #341b5c;
+  --rule: #4a2f7a;
+  --neon: #ff4fa3;        /* the sign over the door: actions, sung lyrics */
+  --ice: #9be8ff;         /* the notes you are meant to hit */
+  --gold: #ffd166;        /* your own voice in the spotlight */
+  --mint: #5cf2b8;        /* a note well hit */
+  --paper: #f3ecff;
+  --mute: #a995cc;
+  --danger: #ff8a7a;
+
+  --display: "Unbounded", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --r-bar: 999px;         /* note bars and anything shaped like one */
+  --r-panel: 14px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--room);
+  color: var(--paper);
+  font: 400 1rem/1.5 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] { display: none !important; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+/* ------------------------------------------------------------ controls */
+
+.btn {
+  font: 600 0.95rem/1 var(--body);
+  color: var(--paper);
+  background: transparent;
+  border: 1.5px solid var(--rule);
+  border-radius: var(--r-bar);
+  padding: 0.7rem 1.15rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--mute); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn-primary { background: var(--neon); border-color: var(--neon); color: #2a0a1c; }
+.btn-primary:hover { background: #ff6db3; border-color: #ff6db3; }
+.btn-quiet { color: var(--mute); }
+.btn-quiet:hover { color: var(--paper); }
+
+input[type="text"], input[type="url"], textarea, select {
+  width: 100%;
+  font: inherit;
+  color: var(--paper);
+  background: var(--room);
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+}
+input::placeholder, textarea::placeholder { color: #7f6aa6; }
+textarea { resize: vertical; }
+input[type="file"] { color: var(--mute); font: inherit; }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 18px; background: transparent; margin: 0; min-width: 70px;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--rule); }
+input[type="range"]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--rule); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; margin-top: -5px;
+  border-radius: 50%; background: var(--paper); border: 0;
+}
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 0; }
+input[type="range"]:disabled { opacity: 0.4; }
+
+/* ------------------------------------------------------------ songbook */
+
+.home { max-width: 60rem; margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
+
+.masthead { margin-bottom: 2.5rem; }
+.wordmark {
+  font: 800 clamp(1.7rem, 7.2vw, 4.4rem)/1 var(--display);
+  letter-spacing: -0.02em;
+  margin: 0;
+  display: flex; align-items: flex-start; gap: 0.12em;
+  height: 2.1em;                     /* room for the syllables to sit at three pitches */
+}
+/* the name as four note bars on their own pitches: K / ai / ra / okay.
+   "ai" and "okay" are the word play, so they get the two bright colours. */
+.wordmark span {
+  display: inline-block;
+  padding: 0.16em 0.3em 0.2em;
+  border-radius: var(--r-bar);
+  color: var(--room);
+}
+.wordmark span:nth-child(1) { background: var(--ice); transform: translateY(0.75em); }
+.wordmark span:nth-child(2) { background: var(--neon); transform: translateY(0.05em); }
+.wordmark span:nth-child(3) { background: var(--ice); transform: translateY(0.6em); }
+.wordmark span:nth-child(4) { background: var(--gold); transform: translateY(0.3em); }
+.tagline { margin: 0.9rem 0 0; color: var(--mute); font-size: 1.1rem; }
+
+.add { margin-bottom: 3.5rem; }
+.add-row { display: flex; gap: 0.75rem; }
+.add-row input { font-size: 1.1rem; padding: 0.85rem 1.1rem; border-radius: var(--r-bar); background: var(--velvet); }
+.add-more { margin-top: 0.9rem; }
+.add-more summary { color: var(--mute); cursor: pointer; width: fit-content; }
+.add-more summary:hover { color: var(--paper); }
+.add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem 1rem; margin-top: 1rem; }
+.add-grid label { display: grid; gap: 0.35rem; color: var(--mute); font-size: 0.9rem; }
+.add-grid .span-2 { grid-column: 1 / -1; }
+.form-error { color: var(--danger); margin: 0.8rem 0 0; }
+
+.songbook h2 {
+  font: 700 1.05rem/1 var(--display);
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1.5px solid var(--rule);
+}
+.song-list { list-style: none; margin: 0; padding: 0; }
+.song {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid #2f1a52;
+}
+.song-no { font: 500 0.95rem/1 var(--display); color: var(--mute); font-variant-numeric: tabular-nums; }
+.song-title { font-weight: 600; font-size: 1.08rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.song-sub { color: var(--mute); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.song-sub.is-error { color: var(--danger); white-space: normal; }
+.song-best { text-align: right; color: var(--gold); font: 500 0.9rem/1.2 var(--display); font-variant-numeric: tabular-nums; min-width: 4.5rem; }
+.song-best small { display: block; font: 400 0.75rem/1.2 var(--body); color: var(--mute); }
+.song-actions { display: flex; gap: 0.5rem; }
+.song-actions .btn { padding: 0.55rem 1rem; }
+.song-remove { border-color: transparent; padding-inline: 0.6rem; }
+.progress { height: 6px; border-radius: 3px; background: var(--velvet-2); margin-top: 0.5rem; overflow: hidden; max-width: 22rem; }
+.progress i { display: block; height: 100%; background: var(--ice); border-radius: 3px; transition: width 0.4s linear; }
+.empty { color: var(--mute); padding: 1.5rem 0; max-width: 34rem; }
+
+/* --------------------------------------------------------------- stage */
+
+.stage {
+  height: 100vh; height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+}
+.stage-bar {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: 1.25rem;
+  padding: 0.8rem 1.25rem;
+}
+.back { color: var(--mute); text-decoration: none; font-weight: 600; }
+.back::before { content: "‹ "; }
+.back:hover { color: var(--paper); }
+.now-playing { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.now-playing strong { font-weight: 700; margin-right: 0.5rem; }
+.now-playing span { color: var(--mute); }
+.score { display: flex; align-items: baseline; gap: 0.6rem; }
+.score-label { color: var(--mute); font-size: 0.85rem; }
+.score-value { font: 700 1.5rem/1 var(--display); color: var(--gold); font-variant-numeric: tabular-nums; min-width: 5ch; text-align: right; }
+
+.highway-wrap { position: relative; min-height: 0; background: #120826; border-block: 1.5px solid #2f1a52; }
+#highway { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.loading, .notice {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  color: var(--mute); text-align: center; max-width: 30rem; padding: 0 1rem;
+}
+.notice { top: auto; bottom: 0.9rem; transform: translateX(-50%); background: var(--velvet); border: 1px solid var(--rule); color: var(--paper);
+  border-radius: 10px; padding: 0.55rem 0.9rem; font-size: 0.9rem; width: max-content; max-width: calc(100% - 2rem); }
+
+.lyrics { text-align: center; padding: 1.4rem 1.5rem 1.1rem; min-height: 9.2rem; }
+.line-now {
+  font: 700 clamp(1.4rem, 3.6vw, 2.6rem)/1.25 var(--display);
+  letter-spacing: -0.01em;
+  margin: 0; min-height: 1.25em;
+  text-wrap: balance;
+}
+.line-now .w {
+  /* each word fills with neon as it is sung */
+  background: linear-gradient(90deg, var(--neon) calc(var(--f, 0) * 100%), var(--paper) calc(var(--f, 0) * 100%));
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.line-now.is-waiting .w { background: none; color: var(--mute); }
+.line-now .dots { color: var(--gold); letter-spacing: 0.3em; margin-right: 0.4em; font-size: 0.7em; vertical-align: 0.15em; }
+.line-next { margin: 0.55rem 0 0; color: var(--mute); font-size: clamp(1rem, 1.8vw, 1.3rem); min-height: 1.5em; }
+
+.deck { background: var(--velvet); padding: 0.85rem 1.25rem 1rem; display: grid; gap: 0.8rem; }
+.transport { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 0.9rem; }
+.btn-play { background: var(--paper); border-color: var(--paper); color: var(--room); min-width: 5.5rem; font-weight: 700; }
+.btn-play:hover { background: #fff; border-color: #fff; }
+.time { color: var(--mute); font-variant-numeric: tabular-nums; font-size: 0.9rem; min-width: 2.6rem; }
+.seek { width: 100%; }
+.seek::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--neon) var(--p, 0%), var(--rule) var(--p, 0%)); }
+
+.knobs { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.5rem; }
+.knobs fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.1rem; }
+.knobs legend { float: left; font-weight: 700; font-size: 0.85rem; margin-right: 0.2rem; padding: 0; }
+.knobs label { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--mute); font-size: 0.85rem; }
+.knobs input[type="range"] { width: 86px; }
+.knobs select { width: auto; max-width: 15rem; padding: 0.4rem 0.6rem; font-size: 0.85rem; border-radius: 8px; }
+.knobs #open-settings { margin-left: auto; padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+.switch { cursor: pointer; }
+.switch input { accent-color: var(--neon); width: 1rem; height: 1rem; margin: 0; }
+.mic-level { width: 46px; height: 6px; border-radius: 3px; background: var(--rule); overflow: hidden; }
+.mic-level i { display: block; height: 100%; width: 0; background: var(--gold); }
+
+/* -------------------------------------------------------------- result */
+
+.result { position: fixed; inset: 0; background: rgba(15, 6, 32, 0.82); display: grid; place-items: center; padding: 1.5rem; z-index: 5; }
+.result-card { text-align: center; max-width: 34rem; }
+.result-rank { font: 800 clamp(1.8rem, 6vw, 3.4rem)/1.1 var(--display); margin: 0 0 1.2rem; color: var(--neon); text-wrap: balance; }
+.result-score { font: 700 clamp(2.6rem, 9vw, 5rem)/1 var(--display); color: var(--gold); margin: 0; font-variant-numeric: tabular-nums; }
+.result-score small { font: 400 1rem/1 var(--body); color: var(--mute); }
+.result-detail { color: var(--paper); margin: 1.2rem 0 2rem; }
+.result-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+/* --------------------------------------------------------------- sheet */
+
+.sheet {
+  width: min(38rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  background: var(--velvet); color: var(--paper);
+  border: 1.5px solid var(--rule); border-radius: var(--r-panel);
+  padding: 0;
+}
+.sheet::backdrop { background: rgba(15, 6, 32, 0.7); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: var(--velvet); }
+.sheet h2 { font: 700 1.1rem/1 var(--display); margin: 0; }
+.sheet h3 { font: 700 0.95rem/1 var(--body); margin: 0 0 0.9rem; }
+.sheet-body { padding: 1.25rem; display: grid; gap: 1.75rem; }
+.sheet .row { display: grid; grid-template-columns: 10rem minmax(0, 1fr) 6.5rem; align-items: center; gap: 0.75rem; margin-bottom: 0.7rem; color: var(--mute); }
+.sheet output { color: var(--paper); font-variant-numeric: tabular-nums; text-align: right; font-size: 0.9rem; }
+.sheet .switch { display: flex; align-items: center; gap: 0.6rem; color: var(--paper); }
+.hint { color: var(--mute); font-size: 0.9rem; margin: 0 0 0.9rem; max-width: 34rem; }
+.sheet-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 0.6rem; }
+
+/* ---------------------------------------------------------- small screens */
+
+@media (max-width: 640px) {
+  .home { padding: 2rem 1rem 3rem; }
+  .add-row { flex-direction: column; }
+  .add-grid { grid-template-columns: 1fr; }
+  .song { grid-template-columns: 2.2rem minmax(0, 1fr); row-gap: 0.5rem; }
+  .song-best { grid-column: 2; text-align: left; }
+  .song-actions { grid-column: 2; }
+  .knobs #open-settings { margin-left: 0; }
+  .sheet .row { grid-template-columns: 1fr 5.5rem; }
+  .sheet .row input { grid-column: 1 / -1; order: 3; }
+  .lyrics { min-height: 7.5rem; padding-inline: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress i { transition: none; }
+}
+
+/* ------------------------------------------- lyrics position, score parts */
+
+.stage.lyrics-above { grid-template-rows: auto auto minmax(0, 1fr) auto; }
+.stage.lyrics-above .lyrics { grid-row: 2; padding-block: 1rem 0.9rem; }
+.stage.lyrics-above .highway-wrap { grid-row: 3; }
+.stage.lyrics-above .deck { grid-row: 4; }
+.stage.lyrics-notes .lyrics { display: none; }
+.stage.lyrics-notes { grid-template-rows: auto minmax(0, 1fr) auto; }
+
+.score-part { color: var(--mute); font-size: 0.85rem; white-space: nowrap; }
+.score-part b { color: var(--paper); font-weight: 600; font-variant-numeric: tabular-nums; margin-left: 0.15rem; }
+.score-label { margin-left: 0.4rem; }
+
+.result-parts { display: flex; justify-content: center; gap: 2rem; margin: 1.4rem 0 0; }
+.result-parts div { min-width: 5rem; }
+.result-parts dt { color: var(--mute); font-size: 0.85rem; }
+.result-parts dd { margin: 0.15rem 0 0; font: 700 1.4rem/1.2 var(--display); font-variant-numeric: tabular-nums; }
+.result-parts dd.is-pending { font: 400 0.9rem/1.9 var(--body); color: var(--mute); }
+
+.sheet h4 { font: 600 0.85rem/1 var(--body); color: var(--mute); margin: 1.4rem 0 0.6rem; }
+.sheet .stack { display: block; }
+.sheet .sheet-actions { margin: 0.7rem 0 0; }
+.sheet select { padding: 0.45rem 0.6rem; border-radius: 8px; }
+
+@media (max-width: 640px) {
+  .score-part { display: none; }
+  .result-parts { gap: 1rem; }
+}
+
+/* ------------------------------------------------------------ two singers */
+
+:root { --violet: #c4a1ff; }
+.score-value-2 { color: var(--violet); }
+.score-value.is-duo, .score-value-2 { min-width: 4ch; }
+.mic-level-2 i { background: var(--violet); }

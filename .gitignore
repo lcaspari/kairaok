@@ -1,0 +1,37 @@
+# --- Songs and everything made from them (copyrighted: never commit) ---
+library/
+*.flac
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.ogg
+*.opus
+*.webm
+*.lrc
+
+# --- Test data that is generated or downloaded ---
+tests/_song/
+tests/_library/
+tests/_jamendo/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# --- Local settings and logs ---
+.env
+*.log
+
+# --- Editors and operating systems ---
+.DS_Store
+.vscode/
+.idea/
+*.swp
+Thumbs.db

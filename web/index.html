@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kairaok</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23170b2e'/%3E%3Crect x='5' y='18' width='9' height='5' rx='2.5' fill='%239be8ff'/%3E%3Crect x='15' y='9' width='12' height='5' rx='2.5' fill='%23ff4fa3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================== songbook ============================== -->
+<main id="home" class="home">
+  <header class="masthead">
+    <h1 class="wordmark" aria-label="Kairaok">
+      <span>K</span><span>ai</span><span>ra</span><span>ok</span>
+    </h1>
+    <p class="tagline">Paste a song. Sing it tonight.</p>
+  </header>
+
+  <form id="add-form" class="add" autocomplete="off">
+    <div class="add-row">
+      <label class="visually-hidden" for="url">YouTube link</label>
+      <input id="url" name="url" type="url" inputmode="url" placeholder="Paste a YouTube link">
+      <button type="submit" class="btn btn-primary" id="add-btn">Make it karaoke</button>
+    </div>
+    <details class="add-more">
+      <summary>Artist, title, own lyrics or an audio file</summary>
+      <div class="add-grid">
+        <label>Artist <input name="artist" type="text" placeholder="Filled in from the video if empty"></label>
+        <label>Title <input name="title" type="text" placeholder="Filled in from the video if empty"></label>
+        <label class="span-2">Lyrics
+          <textarea name="lyrics" rows="5" placeholder="Leave empty to search for time-synced lyrics. Or paste the text (plain or .lrc) here."></textarea>
+        </label>
+        <label class="span-2">Audio file instead of a link
+          <input name="file" type="file" accept="audio/*,video/mp4,.flac,.m4a,.mp3,.wav,.ogg,.opus">
+        </label>
+      </div>
+    </details>
+    <p id="add-error" class="form-error" role="alert" hidden></p>
+  </form>
+
+  <section class="songbook" aria-labelledby="songbook-title">
+    <h2 id="songbook-title">Songbook</h2>
+    <ol id="song-list" class="song-list"></ol>
+    <p id="empty" class="empty" hidden>Your songbook is empty. Paste a link above and the first song will be ready in a few minutes.</p>
+  </section>
+</main>
+
+<!-- ================================ stage ================================ -->
+<main id="stage" class="stage" hidden>
+  <header class="stage-bar">
+    <a href="#/" class="back" id="back">Songbook</a>
+    <div class="now-playing">
+      <strong id="st-title"></strong>
+      <span id="st-artist"></span>
+    </div>
+    <div class="score" aria-live="off">
+      <span class="score-part">Melody <b id="live-melody">–</b></span>
+      <span class="score-part">Rhythm <b id="live-rhythm">–</b></span>
+      <span class="score-label">Score</span>
+      <span id="score" class="score-value">0</span>
+      <span id="score2" class="score-value score-value-2" hidden>0</span>
+    </div>
+  </header>
+
+  <div class="highway-wrap">
+    <canvas id="highway"></canvas>
+    <div id="loading" class="loading">Loading the song</div>
+    <div id="notice" class="notice" hidden></div>
+  </div>
+
+  <div class="lyrics" aria-live="off">
+    <p id="line-now" class="line-now"></p>
+    <p id="line-next" class="line-next"></p>
+  </div>
+
+  <footer class="deck">
+    <div class="transport">
+      <button id="play" class="btn btn-play" disabled aria-label="Play">Play</button>
+      <span id="time" class="time">0:00</span>
+      <input id="seek" class="seek" type="range" min="0" max="1" step="0.01" value="0" aria-label="Position in song" disabled>
+      <span id="dur" class="time">0:00</span>
+    </div>
+    <div class="knobs">
+      <fieldset>
+        <legend>Song</legend>
+        <label>Original singer <input id="vol-vocals" type="range" min="0" max="1" step="0.01"></label>
+        <label>Band <input id="vol-band" type="range" min="0" max="1" step="0.01"></label>
+      </fieldset>
+      <fieldset>
+        <legend>Microphone</legend>
+        <label class="mic-pick">
+          <span class="visually-hidden">Microphone</span>
+          <select id="mic-device"><option value="">Turn on microphone</option></select>
+          <span id="mic-level" class="mic-level" aria-hidden="true"><i></i></span>
+        </label>
+        <label class="mic-pick">
+          <span class="visually-hidden">Second singer's microphone</span>
+          <select id="mic2-device" disabled><option value="">Second singer: off</option></select>
+          <span id="mic2-level" class="mic-level mic-level-2" aria-hidden="true"><i></i></span>
+        </label>
+        <label class="switch"><input id="monitor" type="checkbox"> Hear myself</label>
+        <label>Volume <input id="mic-vol" type="range" min="0" max="1.5" step="0.01"></label>
+        <label>Reverb <input id="reverb" type="range" min="0" max="1" step="0.01"></label>
+        <label>Echo <input id="echo" type="range" min="0" max="1" step="0.01"></label>
+      </fieldset>
+      <button id="open-settings" class="btn btn-quiet" type="button">Timing and lyrics</button>
+    </div>
+  </footer>
+
+  <!-- result -->
+  <div id="result" class="result" hidden>
+    <div class="result-card" role="dialog" aria-labelledby="result-rank">
+      <p id="result-rank" class="result-rank"></p>
+      <p class="result-score"><span id="result-score">0</span> <small id="result-of">of 10,000</small></p>
+      <dl id="result-parts" class="result-parts">
+        <div><dt>Melody</dt><dd id="part-melody">–</dd></div>
+        <div><dt>Rhythm</dt><dd id="part-rhythm">–</dd></div>
+        <div><dt>Lyrics</dt><dd id="part-text">–</dd></div>
+      </dl>
+      <p id="result-detail" class="result-detail"></p>
+      <div class="result-actions">
+        <button id="again" class="btn btn-primary" type="button">Sing it again</button>
+        <a href="#/" class="btn btn-quiet">Back to the songbook</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ======================== timing & lyrics dialog ======================== -->
+<dialog id="settings" class="sheet">
+  <form method="dialog" class="sheet-head">
+    <h2>Timing and lyrics</h2>
+    <button class="btn btn-quiet" value="close">Close</button>
+  </form>
+
+  <div class="sheet-body">
+    <section>
+      <h3>Display</h3>
+      <label class="row">Lyrics position
+        <select id="lyrics-pos">
+          <option value="below">Below the notes</option>
+          <option value="above">Above the notes</option>
+          <option value="notes">On the notes, word by word</option>
+        </select>
+        <span></span>
+      </label>
+    </section>
+
+    <section>
+      <h3>Timing</h3>
+      <label class="row">Lyrics appear
+        <input id="lyrics-offset" type="range" min="-3" max="3" step="0.05">
+        <output id="lyrics-offset-out"></output>
+      </label>
+      <label class="row">Microphone delay
+        <input id="mic-delay" type="range" min="0" max="300" step="5">
+        <output id="mic-delay-out"></output>
+      </label>
+      <p class="hint">If your pitch line shows up late even though you sing on time, raise the microphone delay. Bluetooth microphones and headphones often need 150 ms or more.</p>
+      <label class="switch"><input id="echo-cancel" type="checkbox"> Singing over speakers (filters the song out of the microphone)</label>
+    </section>
+
+    <section>
+      <h3>Melody</h3>
+      <p class="hint">Blue bars are sung notes. Pink dashed bars are spoken or rapped passages, where timing counts and pitch does not. Songs added before an update keep their old notes until you trace them again.</p>
+      <div class="sheet-actions">
+        <button id="redo-melody" class="btn btn-quiet" type="button">Trace the melody again</button>
+      </div>
+      <p id="melody-status" class="hint" role="status"></p>
+    </section>
+
+    <section>
+      <h3>Lyrics</h3>
+      <p id="lyrics-source" class="hint"></p>
+
+      <h4>Use your own text</h4>
+      <label class="stack">
+        <span class="visually-hidden">Your lyrics</span>
+        <textarea id="ly-text" rows="6" placeholder="Paste the lyrics here, one sung line per row. Plain text is timed by listening to the singer; .lrc text keeps its own times."></textarea>
+      </label>
+      <div class="sheet-actions">
+        <button id="ly-own" class="btn btn-primary" type="button">Use this text</button>
+      </div>
+
+      <h4>Search online</h4>
+      <div class="add-grid">
+        <label>Artist <input id="ly-artist" type="text"></label>
+        <label>Title <input id="ly-title" type="text"></label>
+      </div>
+      <div class="sheet-actions">
+        <button id="ly-search" class="btn btn-quiet" type="button">Find lyrics again</button>
+      </div>
+
+      <h4>Fix the timing</h4>
+      <div class="sheet-actions">
+        <button id="ly-ear" class="btn btn-quiet" type="button">Re-time by ear</button>
+        <button id="ly-transcribe" class="btn btn-quiet" type="button">Write down what is sung</button>
+      </div>
+      <p id="ly-status" class="hint" role="status"></p>
+    </section>
+  </div>
+</dialog>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

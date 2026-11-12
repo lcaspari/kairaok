@@ -1,0 +1,11 @@
+# Core: everything except WhisperX (setup.sh adds that on top)
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+requests>=2.31
+yt-dlp[default,deno]
+soundfile>=0.12
+librosa>=0.10.2
+langdetect>=1.0.9
+torch>=2.1
+demucs>=4.0.1

@@ -1,0 +1,8 @@
+# Intel Macs (x86_64). PyTorch stopped publishing Intel-Mac builds after 2.2.2,
+# so the whole stack is held at versions that still work with it.
+# setup.sh applies this file automatically on Intel Macs.
+torch==2.2.2
+torchaudio==2.2.2
+numpy<2              # PyTorch 2.2 was built against NumPy 1.x
+demucs==4.0.1        # newer Demucs needs sphn, which has no Intel-Mac builds
+transformers<4.50    # newer releases expect a newer PyTorch
